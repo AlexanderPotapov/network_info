@@ -258,12 +258,12 @@ def parse_blocks(jobs: Queue, connection_string: str):
         if isinstance(inetnum, list):
             for cidr in inetnum:
                 b = Block(inetnum=str(cidr), netname=netname, description=description, country=country,
-                          maintained_by=maintained_by, origin=origin, source=source
+                          maintained_by=maintained_by, origin=origin, source=source)
 #                          mail = str(mail)), created=created, last_modified=last_modified, 
                 session.add(b)
         else:
             b = Block(inetnum=inetnum.decode('utf-8'), netname=netname, description=description, country=country,
-                      maintained_by=maintained_by, origin=origin, source=source
+                      maintained_by=maintained_by, origin=origin, source=source)
 #                       created=created, last_modified=last_modified, mail=str(mail))
             session.add(b)
 
