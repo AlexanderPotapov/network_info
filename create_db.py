@@ -250,21 +250,21 @@ def parse_blocks(jobs: Queue, connection_string: str):
         country = parse_property(block, b'country')
         maintained_by = parse_property(block, b'mnt-by')
         origin = parse_property(block, b'origin')
-        created = parse_property(block, b'created')
-        last_modified = parse_property(block, b'last-modified')
+#        created = parse_property(block, b'created')
+#        last_modified = parse_property(block, b'last-modified')
         source = parse_property(block, b'cust_source')
-        mail = parse_property_mail(block)
+#        mail = parse_property_mail(block)
 
         if isinstance(inetnum, list):
             for cidr in inetnum:
                 b = Block(inetnum=str(cidr), netname=netname, description=description, country=country,
-                          maintained_by=maintained_by, origin=origin, created=created, last_modified=last_modified, source=source,
-                          mail = str(mail))
+                          maintained_by=maintained_by, origin=origin, source=source
+
                 session.add(b)
         else:
             b = Block(inetnum=inetnum.decode('utf-8'), netname=netname, description=description, country=country,
-                      maintained_by=maintained_by, origin=origin, created=created, last_modified=last_modified, source=source,
-                      mail=str(mail))
+                      maintained_by=maintained_by, origin=origin,  source=source
+#                      created=created, last_modified=last_modified, mail=str(mail))
             session.add(b)
 
         counter += 1
