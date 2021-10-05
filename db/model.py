@@ -19,10 +19,10 @@ class Block(Base):
     country = Column(String, index=True)
     maintained_by = Column(String, index=True)
     origin = Column(String, index=True)
-    #created = Column(DateTime, index=True)
-    #last_modified = Column(DateTime, index=True)
+    created = Column(DateTime, index=True)
+    last_modified = Column(DateTime, index=True)
     source = Column(String, index=True)
-    #mail = Column(String, index=True)
+    mail = Column(String, index=True)
 
     def __str__(self):
         return 'inetnum: {}, netname: {}, desc: {}, country: {}, maintained: {}, origin: {}, created: {}, updated: {}, source: {}, mail: {}'.format(
