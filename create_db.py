@@ -33,7 +33,7 @@ FILELIST = ['afrinic.db.gz','arin.db.gz','lacnic.db.gz',
 
 DESCRIPTLIMIT = 400 # Setting a limit on the number of characters in the "description" field.
 #NUM_WORKERS = cpu_count()
-NUM_WORKERS = 8
+NUM_WORKERS = 6
 LOG_FORMAT = '%(asctime)-15s - %(name)-9s - %(levelname)-8s - %(processName)-11s - %(filename)s - %(message)s'
 COMMIT_COUNT = 10000
 NUM_BLOCKS = 0
