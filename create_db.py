@@ -19,7 +19,7 @@ from netaddr import iprange_to_cidrs
 import math
 import subprocess
 
-VERSION = '2.3'
+VERSION = '2.5'
 
 PHP = True
 
@@ -38,6 +38,15 @@ LOG_FORMAT = '%(asctime)-15s - %(name)-9s - %(levelname)-8s - %(processName)-11s
 COMMIT_COUNT = 10000
 NUM_BLOCKS = 0
 CURRENT_FILENAME = "empty"
+
+
+# Create a dictionary with ASN data
+ASN_lists = dict()
+with open('./databases/asn.txt') as f:
+    for line in f:
+        key = 'AS' + line.split(" ")[0]
+        value = line.split(" ")[1:]
+        ASN_lists[key] = value
 
 
 class ContextFilter(logging.Filter):
@@ -94,6 +103,24 @@ def parse_property(block: str, name: str) -> str:
         # remove multiple whitespaces by using a split hack
         # decode to latin-1 so it can be inserted in the database
         return ' '.join(x.decode('latin-1').split())
+    else:
+        return None
+
+
+def parse_property_county(block: str, origin: str) -> str:
+    name = b'country'
+    match = re.findall(b'^%s:\s?(.+)$' % (name), block, re.MULTILINE)
+    if match:
+        # remove empty lines and remove multiple names
+        x = b' '.join(list(filter(None, (x.strip().replace(
+            b"%s: " % name, b'').replace(b"%s: " % name, b'') for x in match))))
+        # remove multiple whitespaces by using a split hack
+        # decode to latin-1 so it can be inserted in the database
+        return ' '.join(x.decode('latin-1').split())
+    elif origin is not None and origin[:2] == 'AS':
+        match = ASN_lists.get(origin)
+        if match is not None:
+            return match[1]
     else:
         return None
 
@@ -247,24 +274,24 @@ def parse_blocks(jobs: Queue, connection_string: str):
         inetnum = parse_property_inetnum(block)
         netname = parse_property(block, b'netname')
         description = parse_property(block, b'descr')
-        country = parse_property(block, b'country')
         maintained_by = parse_property(block, b'mnt-by')
         origin = parse_property(block, b'origin')
-#        created = parse_property(block, b'created')
-#        last_modified = parse_property(block, b'last-modified')
+        country = parse_property_county(block, origin)
+        created = parse_property(block, b'created')
+        last_modified = parse_property(block, b'last-modified')
         source = parse_property(block, b'cust_source')
-#        mail = parse_property_mail(block)
+        mail = parse_property_mail(block)
 
         if isinstance(inetnum, list):
             for cidr in inetnum:
                 b = Block(inetnum=str(cidr), netname=netname, description=description, country=country,
-                          maintained_by=maintained_by, origin=origin, source=source)
-#                          mail = str(mail)), created=created, last_modified=last_modified, 
+                          maintained_by=maintained_by, origin=origin, created=created, last_modified=last_modified, source=source,
+                          mail = str(mail))
                 session.add(b)
         else:
             b = Block(inetnum=inetnum.decode('utf-8'), netname=netname, description=description, country=country,
-                      maintained_by=maintained_by, origin=origin, source=source)
-#                       created=created, last_modified=last_modified, mail=str(mail))
+                      maintained_by=maintained_by, origin=origin, created=created, last_modified=last_modified, source=source,
+                      mail=str(mail))
             session.add(b)
 
         counter += 1
