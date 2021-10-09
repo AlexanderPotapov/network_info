@@ -15,4 +15,4 @@ if [[ -n "$REBUILD" ]]; then
   docker-compose build
 fi
 
-docker-compose run -f docker-compose.yml --rm --service-ports network_info "$@"
+docker-compose run -f docker-compose.yml --rm --service-ports irrator "$@"
